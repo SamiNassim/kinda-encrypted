@@ -6,6 +6,10 @@ import HomePage from "./pages/home-page";
 import DecryptPage from "./pages/decrypt-page";
 
 function App() {
+  document.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+  });
+
   return (
     <HashRouter basename="/">
       <PreventBackNavigation />

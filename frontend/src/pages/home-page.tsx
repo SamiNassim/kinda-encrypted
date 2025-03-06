@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function HomePage() {
+  const navigate = useNavigate();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <div>
@@ -20,16 +21,18 @@ function HomePage() {
         </p>
 
         <div className="flex flex-col gap-4">
-          <Link to="/encrypt">
-            <Button className="w-full rounded-lg text-center font-medium text-white transition duration-200 hover:opacity-80">
-              Encrypt Files
-            </Button>
-          </Link>
-          <Link to="/decrypt">
-            <Button className="w-full rounded-lg bg-gray-200 text-center font-medium text-gray-800 transition duration-200 hover:opacity-80">
-              Decrypt Files
-            </Button>
-          </Link>
+          <Button
+            onClick={() => navigate("/encrypt")}
+            className="w-full rounded-lg text-center font-medium text-white transition duration-200 hover:opacity-80"
+          >
+            Encrypt Files
+          </Button>
+          <Button
+            onClick={() => navigate("/decrypt")}
+            className="w-full rounded-lg bg-gray-200 text-center font-medium text-gray-800 transition duration-200 hover:opacity-80"
+          >
+            Decrypt Files
+          </Button>
         </div>
       </div>
 

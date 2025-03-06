@@ -4,12 +4,14 @@ import { Label } from "@/components/ui/label";
 import { EncryptionService } from "../../bindings/changeme";
 import { ArrowLeft, Unlock, Upload, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const DecryptPage = () => {
   const [filePath, setFilePath] = useState<string | undefined>(undefined);
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
   const [password, setPassword] = useState<string | undefined>(undefined);
+
+  const navigate = useNavigate();
 
   const getFilePath = async () => {
     const path = await EncryptionService.GetFilePath();
@@ -36,13 +38,13 @@ const DecryptPage = () => {
     <div className="flex min-h-screen flex-col items-center justify-center">
       <div className="min-w-96">
         <div className="mb-6 flex items-center">
-          <Link
-            to="/"
-            className="flex items-center text-blue-600 hover:text-blue-800"
+          <div
+            onClick={() => navigate("/")}
+            className="flex cursor-default items-center text-blue-600 hover:text-blue-800"
           >
             <ArrowLeft className="mr-2 h-5 w-5" />
             Back to Home
-          </Link>
+          </div>
         </div>
 
         <h1 className="mb-4 text-2xl font-bold text-gray-800">

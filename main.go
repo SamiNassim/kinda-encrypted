@@ -3,8 +3,9 @@ package main
 import (
 	"embed"
 	_ "embed"
+	"fmt"
 	"log"
-	"time"
+	"runtime"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -28,7 +29,7 @@ func main() {
 	// 'Bind' is a list of Go struct instances. The frontend has access to the methods of these instances.
 	// 'Mac' options tailor the application when running an macOS.
 	app := application.New(application.Options{
-		Name:        "kindaencrypted",
+		Name:        "KindaEncrypted",
 		Description: "A simple encryption app using AES-256-GCM",
 		Services: []application.Service{
 			application.NewService(&EncryptionService{}),
@@ -47,7 +48,7 @@ func main() {
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
 	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-		Title: "Window 1",
+		Title: "KindaEncrypted",
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
@@ -56,18 +57,23 @@ func main() {
 		BackgroundColour:           application.NewRGB(27, 38, 54),
 		URL:                        "/",
 		DefaultContextMenuDisabled: true,
+		DevToolsEnabled:            false,
 	})
 
-	// Create a goroutine that emits an event containing the current time every second.
-	// The frontend can listen to this event and update the UI accordingly.
-	go func() {
-		for {
-			now := time.Now().Format(time.RFC1123)
-			app.EmitEvent("time", now)
-			time.Sleep(time.Second)
-		}
-	}()
+	menu := app.NewMenu()
 
+	if runtime.GOOS == "darwin" {
+		menu.AddRole(application.AppMenu)
+	}
+
+	// Add standard menus
+	fileMenu := menu.AddSubmenu("File")
+	fileMenu.Add("Encrypt file")
+	fileMenu.AddRole(application.CloseWindow)
+	menu.AddRole(application.EditMenu).Add("Encrypt").OnClick(func(ctx *application.Context) { fmt.Println("Clicked") })
+	menu.AddRole(application.WindowMenu).Add("Encrypt").OnClick(func(ctx *application.Context) { fmt.Println("Clicked") })
+
+	app.SetMenu(menu)
 	// Run the application. This blocks until the application has been exited.
 	err := app.Run()
 
