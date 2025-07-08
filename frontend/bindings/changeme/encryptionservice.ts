@@ -5,14 +5,22 @@
 // @ts-ignore: Unused imports
 import {Call as $Call, Create as $Create} from "@wailsio/runtime";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as $models from "./models.js";
+
 export function DecryptFileAES256GCM(password: string, inputFile: string, outputPath: string): Promise<void> & { cancel(): void } {
     let $resultPromise = $Call.ByID(3311871556, password, inputFile, outputPath) as any;
     return $resultPromise;
 }
 
-export function EncryptFileAES256GCM(password: string, inputPath: string, outputPath: string): Promise<void> & { cancel(): void } {
+export function EncryptFileAES256GCM(password: string, inputPath: string, outputPath: string): Promise<$models.AppResponse | null> & { cancel(): void } {
     let $resultPromise = $Call.ByID(1211961388, password, inputPath, outputPath) as any;
-    return $resultPromise;
+    let $typingPromise = $resultPromise.then(($result: any) => {
+        return $$createType1($result);
+    }) as any;
+    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
+    return $typingPromise;
 }
 
 export function GetFilePath(): Promise<string> & { cancel(): void } {
@@ -24,3 +32,12 @@ export function GetOutputPath(): Promise<string> & { cancel(): void } {
     let $resultPromise = $Call.ByID(3194427022) as any;
     return $resultPromise;
 }
+
+export function NewDialog(title: string, msg: string): Promise<void> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(3378329922, title, msg) as any;
+    return $resultPromise;
+}
+
+// Private type creation functions
+const $$createType0 = $models.AppResponse.createFrom;
+const $$createType1 = $Create.Nullable($$createType0);

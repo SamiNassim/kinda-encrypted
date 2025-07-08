@@ -28,10 +28,21 @@ const DecryptPage = () => {
   };
 
   const handleSubmit = () => {
-    if (!password || !filePath || !outputPath) {
+    if (!filePath) {
+      EncryptionService.NewDialog("Error", "Please select a file.");
       return;
     }
-    EncryptionService.DecryptFileAES256GCM(password, filePath, outputPath);
+    if (filePath && !outputPath) {
+      EncryptionService.NewDialog("Error", "Please select the output folder.");
+      return;
+    }
+    if (filePath && outputPath && !password) {
+      EncryptionService.NewDialog("Error", "Please enter the password.");
+      return;
+    }
+    if (filePath && outputPath && password) {
+      EncryptionService.DecryptFileAES256GCM(password, filePath, outputPath);
+    }
   };
 
   return (
@@ -88,7 +99,7 @@ const DecryptPage = () => {
         )}
 
         <div className="flex flex-col gap-2 py-4">
-          <Label>Encryption key</Label>
+          <Label>Password</Label>
           <Input onChange={handlePasswordChange} type="password" />
         </div>
         <Button

@@ -20,6 +20,11 @@ func NewEncryptionService() *EncryptionService {
 	return &EncryptionService{}
 }
 
+type AppResponse struct {
+	Message string
+	Status  int
+}
+
 const KeySize = 32 // 32 bytes = AES-256
 const SaltSize = 16
 const Iterations = 100_000 // PBKDF2 iterations
@@ -28,32 +33,32 @@ func deriveKey(password string, salt []byte) []byte {
 	return pbkdf2.Key([]byte(password), salt, Iterations, KeySize, sha256.New)
 }
 
-func (e *EncryptionService) EncryptFileAES256GCM(password, inputPath, outputPath string) error {
+func (e *EncryptionService) EncryptFileAES256GCM(password, inputPath, outputPath string) *AppResponse {
 	plaintext, err := os.ReadFile(inputPath)
 	if err != nil {
-		return err
+		return &AppResponse{Message: err.Error(), Status: 400}
 	}
 
 	salt := make([]byte, SaltSize)
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
-		return err
+		return &AppResponse{Message: err.Error(), Status: 400}
 	}
 
 	key := deriveKey(password, salt)
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return err
+		return &AppResponse{Message: err.Error(), Status: 400}
 	}
 
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return err
+		return &AppResponse{Message: err.Error(), Status: 400}
 	}
 
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		return err
+		return &AppResponse{Message: err.Error(), Status: 400}
 	}
 
 	ciphertext := gcm.Seal(nil, nonce, plaintext, nil)
@@ -65,10 +70,11 @@ func (e *EncryptionService) EncryptFileAES256GCM(password, inputPath, outputPath
 
 	err = os.WriteFile(outputFile, finalCiphertext, 0644)
 	if err != nil {
-		return err
+		return &AppResponse{Message: err.Error(), Status: 400}
 	}
+	e.NewDialog("Info", "Encryption successful !")
 
-	return nil
+	return &AppResponse{Message: "success", Status: 200}
 }
 
 func (e *EncryptionService) DecryptFileAES256GCM(password, inputFile, outputPath string) error {
@@ -99,6 +105,7 @@ func (e *EncryptionService) DecryptFileAES256GCM(password, inputFile, outputPath
 
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
+		e.NewDialog("Error", "Decryption failed: incorrect password or corrupted data")
 		return errors.New("decryption failed: incorrect password or corrupted data")
 	}
 
@@ -109,6 +116,8 @@ func (e *EncryptionService) DecryptFileAES256GCM(password, inputFile, outputPath
 	if err != nil {
 		return err
 	}
+
+	e.NewDialog("Info", "File decrypted !")
 
 	return nil
 }
@@ -132,4 +141,11 @@ func (e *EncryptionService) GetOutputPath() string {
 	}
 
 	return ""
+}
+
+func (e *EncryptionService) NewDialog(title, msg string) {
+	dialog := application.InfoDialog()
+	dialog.SetTitle(title)
+	dialog.SetMessage(msg)
+	dialog.Show()
 }

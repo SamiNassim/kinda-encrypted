@@ -10,7 +10,6 @@ const EncryptPage = () => {
   const [filePath, setFilePath] = useState<string | undefined>(undefined);
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
   const [password, setPassword] = useState<string | undefined>(undefined);
-  const [test, setTest] = useState<string | undefined>(undefined);
 
   const navigate = useNavigate();
 
@@ -29,16 +28,23 @@ const EncryptPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!password || !filePath || !outputPath) {
+    if (!filePath) {
+      EncryptionService.NewDialog("Error", "Please select a file.");
       return;
     }
-    const res = await EncryptionService.EncryptFileAES256GCM(
-      password,
-      filePath,
-      outputPath,
-    );
-    setTest(res?.Message);
+    if (filePath && !outputPath) {
+      EncryptionService.NewDialog("Error", "Please select the output folder.");
+      return;
+    }
+    if (filePath && outputPath && !password) {
+      EncryptionService.NewDialog("Error", "Please enter the password.");
+      return;
+    }
+    if (filePath && outputPath && password) {
+      EncryptionService.EncryptFileAES256GCM(password, filePath, outputPath);
+    }
   };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <div className="min-w-96">
@@ -48,7 +54,7 @@ const EncryptPage = () => {
             className="flex cursor-default items-center text-blue-600 hover:text-blue-800"
           >
             <ArrowLeft className="mr-2 h-5 w-5" />
-            Back to Home {test}
+            Back to Home
           </div>
         </div>
 
@@ -94,7 +100,7 @@ const EncryptPage = () => {
         )}
 
         <div className="flex flex-col gap-2 py-4">
-          <Label>Encryption key</Label>
+          <Label>Password</Label>
           <Input onChange={handlePasswordChange} type="password" />
         </div>
         <Button

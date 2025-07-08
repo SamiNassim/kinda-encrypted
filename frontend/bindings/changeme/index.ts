@@ -5,3 +5,5 @@ import * as EncryptionService from "./encryptionservice.js";
 export {
     EncryptionService
 };
+
+export * from "./models.js";

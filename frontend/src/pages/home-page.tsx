@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function HomePage() {
@@ -8,9 +7,7 @@ function HomePage() {
     <div className="flex min-h-screen flex-col items-center justify-center">
       <div>
         <div className="mb-6 flex items-center justify-center">
-          <div className="bg-primary rounded-full p-3">
-            <Lock className="h-8 w-8 text-white" />
-          </div>
+          <img src="/appicon.png" width={100} height={100} />
         </div>
 
         <h1 className="mb-2 text-center text-3xl font-bold text-gray-800">
