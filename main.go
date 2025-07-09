@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	_ "embed"
-	"fmt"
 	"log"
 	"runtime"
 
@@ -65,13 +64,9 @@ func main() {
 	if runtime.GOOS == "darwin" {
 		menu.AddRole(application.AppMenu)
 	}
-
-	// Add standard menus
-	fileMenu := menu.AddSubmenu("File")
-	fileMenu.Add("Encrypt file")
-	fileMenu.AddRole(application.CloseWindow)
-	menu.AddRole(application.EditMenu).Add("Encrypt").OnClick(func(ctx *application.Context) { fmt.Println("Clicked") })
-	menu.AddRole(application.WindowMenu).Add("Encrypt").OnClick(func(ctx *application.Context) { fmt.Println("Clicked") })
+	menu.AddRole(application.FileMenu)
+	menu.AddRole(application.EditMenu)
+	menu.AddRole(application.WindowMenu)
 
 	app.SetMenu(menu)
 	// Run the application. This blocks until the application has been exited.
